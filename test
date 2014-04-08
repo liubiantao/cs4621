@@ -1,0 +1,21 @@
+-5 abs  
+3 neg  
+4 7 swap  
+
+t not  
+f not  
+
+f t or    
+f f or    
+t t or     
+t f or   
+
+ 
+f t and    
+f f and    
+t t and     
+t f and  
+
+
+t [ t ] [ f ] if 
+3 5.5 + .

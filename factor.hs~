@@ -5,6 +5,7 @@
 --    integers, booleans, quotations, definitions, invocations,               --
 --    and the operators . + - * / % = # < <= > >= drop dup lift sink if       --
 --------------------------------------------------------------------------------
+
 type Token = String
 
 --------------------------------------------------------------------------------
@@ -30,8 +31,10 @@ factor :: String -> IO ( )
 factor fileName = do
                      source <- readFile fileName
                      putStr "\n"
-                     putStrLn ( "SOURCE = " ++ format source )
-                     putStrLn ( "RESULT = " ++ eval ( builtIn ++ source) )
+                     putStr ( "SOURCE = " ++ source )
+                     putStr "\n"
+                     putStr ( "RESULT = " ++ eval source )
+                     putStr "\n"
 
 --------------------------------------------------------------------------------
 
@@ -40,7 +43,6 @@ factor fileName = do
 
 format :: String -> String
 
-format []            = []
 format "\n"          = "\n"
 format ( '\n' : cs ) = '\n' : "         " ++ format cs
 format ( c    : cs ) = c    :                format cs
@@ -51,7 +53,7 @@ format ( c    : cs ) = c    :                format cs
 
 eval :: String -> String
 
-eval source = eval' ( (words source) ) [ ] [ ]
+eval source = eval' ( words source ) [ ] [ ]
 
 --------------------------------------------------------------------------------
 
@@ -259,50 +261,4 @@ sink :: Integer -> Stack -> Stack
 sink 1 ss               = ss
 sink k ( s1 : s2 : ss ) = s2 : sink ( k - 1 ) ( s1 : ss )
 
---------------------------------------------------------------------------------
---                             Assignment #4                                  --
--- 1. I rewrite "factor" and "format" function.                               --
--- swap:exchange the top two stack items  : 4 7 swap => 7 4                   --
--- the output of swap should not be 7 4 , cause stack is first in last out    --
--- it should output 4 7                                                       --
---------------------------------------------------------------------------------
-builtIn :: String
-builtIn = unlines [
-        ": swap 2 lift ;",
-        ": neg -1 * ; ",
-        ": abs dup 0 < [ neg ] [ ] if ;",
-        ": not [ f ] [ t ] if ;",
-        ": and [ [ t ] [ f ] if ] [ drop f ] if ;",
-        ": or [ drop t ] [ [ t ] [ f ] if ] if ;"
-        ]
-
---------------------------------------------------------------------------------
--- 2. 
-
---If using eval'
---pros: compare with factor language, eval' is lower level, So the efficent is 
---  higher.  
---cons: developing time more than factor, and if you're a factor programer,
---  you have to learn another language which called haskell.
-
---Using factor
---pros: developing time less than eval', the code easy to read and understand.
---cons: need more memory and cpu, operation time also long.
-
---------------------------------------------------------------------------------
--- 3.                                                                         --
---------------------------------------------------------------------------------
---   error type         ||         example                                    --
---------------------------------------------------------------------------------    
---   SyntaxError        ||        : swap 2 lift                               --
---                      ||        : f [t] [f] if ;                            --
---------------------------------------------------------------------------------          
---   TypeError          ||        't' [ t ] [ f ] if .                        --
---                      ||        1 '2' + .                                   --
---                      ||        t t + .                                     --
---------------------------------------------------------------------------------
---   NameError          ||        : swap 2 lift ; 3 4 swab . .                --
---------------------------------------------------------------------------------
---   ValueError         ||        5 + .                                       --
---                      ||        3 5 + . .                                   --
 --------------------------------------------------------------------------------
